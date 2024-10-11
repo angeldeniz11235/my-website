@@ -25,7 +25,7 @@ jobs:
         username: ${{ secrets.SERVER_USER }}   # Add this in GitHub Secrets
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         script: |
-          cd /path/to/react/app  # Path on remote server
+          cd /root/www/my-website-app/react-app  # Path on remote server
           git pull origin main
           npm install
           npm run build
