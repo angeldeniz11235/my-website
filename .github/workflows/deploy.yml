@@ -13,11 +13,6 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
 
-    - name: Install dependencies and build
-      run: |
-        npm install
-        npm run build
-
     - name: Deploy to Server
       uses: appleboy/ssh-action@v0.1.5
       with:
@@ -25,7 +20,7 @@ jobs:
         username: ${{ secrets.SERVER_USER }}   # Add this in GitHub Secrets
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         script: |
-          cd /root/www/my-website-app/react-app  # Path on remote server
+          cd /root/www/my-website  # Path on remote server
           git pull origin main
           npm install
           npm run build
