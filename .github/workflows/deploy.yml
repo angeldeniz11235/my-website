@@ -1,0 +1,31 @@
+name: Deploy React App
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Install dependencies and build
+      run: |
+        npm install
+        npm run build
+
+    - name: Deploy to Server
+      uses: appleboy/ssh-action@v0.1.5
+      with:
+        host: ${{ secrets.SERVER_HOST }}       # Add this in GitHub Secrets
+        username: ${{ secrets.SERVER_USER }}   # Add this in GitHub Secrets
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        script: |
+          cd /path/to/react/app  # Path on remote server
+          git pull origin main
+          npm install
+          npm run build
