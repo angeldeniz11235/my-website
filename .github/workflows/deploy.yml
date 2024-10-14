@@ -16,11 +16,12 @@ jobs:
     - name: Deploy to Server
       uses: appleboy/ssh-action@v0.1.5
       with:
-        host: ${{ secrets.SERVER_HOST }}       # Add this in GitHub Secrets
-        username: ${{ secrets.SERVER_USER }}   # Add this in GitHub Secrets
+        host: ${{ secrets.SERVER_HOST }}       
+        username: ${{ secrets.SERVER_USER }}   
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         script: |
           cd /root/www/my-website  # Path on remote server
           git pull origin master
           npm install
           npm run build
+          pm2 restart my-website-app
