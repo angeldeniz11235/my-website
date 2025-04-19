@@ -10,7 +10,7 @@ function MoviePlayer() {
           className="w-full"
           style={{ border: '2px solid white', borderRadius: '8px' }}
         >
-          <source src="/warfare-2025/hls/warfare2025.m3u8" type="application/x-mpegURL" />
+          <source src="/movies/warfare-2025/hls/warfare2025.m3u8" type="application/x-mpegURL" />
           Your browser does not support the video tag.
         </video>
       </div>
