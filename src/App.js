@@ -52,6 +52,7 @@ function App() {
                 <h1 className="text-4xl font-bold text-white">Admin Page</h1>
               </ProtectedRoute>
             } />
+            <Route path="/warfare-2025" element={<MoviePlayer />} />
             <Route path="/" element={<h1 className="text-4xl font-bold text-white">Welcome to My Website</h1>} />
           </Routes>
         </div>
