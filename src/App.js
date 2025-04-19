@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import Login from './Components/Login';
 import ProtectedRoute from './Components/ProtectedRoute';
 import { fetchHomePageURL, getImageUrls } from './services/api';
+import MoviePlayer from './Components/MoviePlayer';
 
 function App() {
   const [backgroundImgURL, setBackgroundImgURL] = useState('');
