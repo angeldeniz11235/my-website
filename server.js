@@ -34,6 +34,31 @@ const path = require('path');
 const fs = require('fs');
 const mysql = require('mysql2/promise');
 const nodemailer = require('nodemailer');
+const crypto = require('crypto');
+
+function hashPassword(password, salt) {
+  if (!salt) {
+    salt = crypto.randomBytes(16).toString('hex');
+  }
+  const hash = crypto.scryptSync(password, salt, 64).toString('hex');
+  return { hash, salt };
+}
+
+async function initAdminPassword() {
+  try {
+    const [rows] = await pool.query('SELECT setting_key, setting_value FROM system_settings WHERE setting_key IN ("admin_password_hash", "admin_password_salt")');
+    const settings = {};
+    rows.forEach(r => { settings[r.setting_key] = r.setting_value; });
+
+    if (!settings.admin_password_hash || !settings.admin_password_salt) {
+      const { hash, salt } = hashPassword('1234');
+      await pool.query('REPLACE INTO system_settings (setting_key, setting_value) VALUES ("admin_password_hash", ?), ("admin_password_salt", ?)', [hash, salt]);
+      console.log('Initialized default admin password (1234) into system_settings');
+    }
+  } catch (e) {
+    console.error('Error initializing admin password:', e);
+  }
+}
 const { execFile, exec } = require('child_process');
 
 const app = express();
@@ -555,10 +580,68 @@ app.post('/api/tutoring/chat', async (req, res) => {
   });
 });
 
+app.post('/api/admin/login', async (req, res) => {
+  const { password } = req.body;
+  if (!password) return res.status(400).json({ ok: false, error: 'Password is required.' });
+
+  try {
+    const [rows] = await pool.query('SELECT setting_key, setting_value FROM system_settings WHERE setting_key IN ("admin_password_hash", "admin_password_salt")');
+    const settings = {};
+    rows.forEach(r => { settings[r.setting_key] = r.setting_value; });
+
+    if (!settings.admin_password_hash || !settings.admin_password_salt) {
+      const { hash, salt } = hashPassword('1234');
+      await pool.query('REPLACE INTO system_settings (setting_key, setting_value) VALUES ("admin_password_hash", ?), ("admin_password_salt", ?)', [hash, salt]);
+      settings.admin_password_hash = hash;
+      settings.admin_password_salt = salt;
+    }
+
+    const { hash } = hashPassword(password, settings.admin_password_salt);
+    if (hash === settings.admin_password_hash) {
+      return res.json({ ok: true, message: 'Authenticated successfully' });
+    } else {
+      return res.status(401).json({ ok: false, error: 'Invalid admin password.' });
+    }
+  } catch (e) {
+    return res.status(500).json({ ok: false, error: e.message });
+  }
+});
+
+app.post('/api/admin/update-password', async (req, res) => {
+  const { current_password, new_password } = req.body;
+  if (!current_password || !new_password) {
+    return res.status(400).json({ ok: false, error: 'Current password and new password are required.' });
+  }
+  if (new_password.length < 4) {
+    return res.status(400).json({ ok: false, error: 'New password must be at least 4 characters long.' });
+  }
+
+  try {
+    const [rows] = await pool.query('SELECT setting_key, setting_value FROM system_settings WHERE setting_key IN ("admin_password_hash", "admin_password_salt")');
+    const settings = {};
+    rows.forEach(r => { settings[r.setting_key] = r.setting_value; });
+
+    if (settings.admin_password_hash && settings.admin_password_salt) {
+      const { hash: checkHash } = hashPassword(current_password, settings.admin_password_salt);
+      if (checkHash !== settings.admin_password_hash) {
+        return res.status(401).json({ ok: false, error: 'Incorrect current password.' });
+      }
+    }
+
+    const { hash: newHash, salt: newSalt } = hashPassword(new_password);
+    await pool.query('REPLACE INTO system_settings (setting_key, setting_value) VALUES ("admin_password_hash", ?), ("admin_password_salt", ?)', [newHash, newSalt]);
+
+    return res.json({ ok: true, message: 'Admin password updated successfully!' });
+  } catch (e) {
+    return res.status(500).json({ ok: false, error: e.message });
+  }
+});
+
 app.use((req, res) => {
   res.sendFile(path.join(__dirname, 'build', 'index.html'));
 });
 
+initAdminPassword();
 app.listen(PORT, () => {
   console.log(`Server listening on port ${PORT}`);
 });
