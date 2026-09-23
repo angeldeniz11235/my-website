@@ -28,7 +28,7 @@ function TutoringTerminal() {
       setMessages([
         {
           sender: 'tutor',
-          text: "Hi Russell! 👋 Welcome to your AGY Tutoring Workspace. I'm your Chat Tutor! Today we're working on setting up AGY locally on your computer and exploring the High-Rollers Godot game project. Take a look at your lesson plan on the right, and ask me anything whenever you have a question!",
+          text: "Hi Russell! 👋 Welcome to your AGY Tutoring Workspace. I'm your Chat Tutor! Today we're working on setting up AGY locally on your Windows 10 computer and exploring your High-Rollers Godot game project. Take a look at your lesson plan on the right, and ask me anything whenever you have a question!",
           time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
         }
       ]);
@@ -164,7 +164,7 @@ function TutoringTerminal() {
               AGY Tutoring Workspace
             </h1>
             <p className="text-xs text-slate-400">
-              Student: <span className="text-emerald-400 font-semibold">{user}</span> | Project: High-Rollers (Godot)
+              Student: <span className="text-emerald-400 font-semibold">{user} (Windows 10)</span> | Project: High-Rollers (Godot)
             </p>
           </div>
         </div>
@@ -280,23 +280,33 @@ function TutoringTerminal() {
             {/* Lesson Summary Card */}
             <div className="bg-slate-950 border border-slate-800 rounded-lg p-3 text-xs leading-relaxed text-slate-300">
               <span className="font-semibold text-emerald-400 block mb-1">Session Overview:</span>
-              {lesson?.summary || 'Complete tasks step-by-step and test code in VS Code.'}
+              {lesson?.summary || 'Complete tasks step-by-step and test code in VS Code on Windows 10.'}
             </div>
 
             {/* Quick Actions (Session 1 Setup Script) */}
-            <div className="bg-emerald-950/40 border border-emerald-500/30 rounded-lg p-3 flex items-center justify-between">
+            <div className="bg-emerald-950/40 border border-emerald-500/30 rounded-lg p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
               <div>
                 <span className="text-xs font-bold text-emerald-300 block">AGY Local Credential Sync</span>
-                <span className="text-[10px] text-slate-400">Run command to copy credentials to your local VS Code</span>
+                <span className="text-[10px] text-slate-400">Download script or copy command for Windows 10</span>
               </div>
-              <a
-                href="/setup-agy.sh"
-                target="_blank"
-                rel="noreferrer"
-                className="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold px-3 py-1.5 rounded transition-all select-none"
-              >
-                Get Script
-              </a>
+              <div className="flex space-x-2 select-none">
+                <a
+                  href="/setup-agy.ps1"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="bg-emerald-600 hover:bg-emerald-500 text-white text-[11px] font-bold px-2.5 py-1.5 rounded transition-all"
+                >
+                  🪟 Windows (.ps1)
+                </a>
+                <a
+                  href="/setup-agy.sh"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-[11px] font-bold px-2.5 py-1.5 rounded transition-all"
+                >
+                  🐧 Bash (.sh)
+                </a>
+              </div>
             </div>
 
             {/* Tasks Checklist */}

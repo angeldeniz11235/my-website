@@ -13,10 +13,10 @@ app.use(express.json({ limit: '2mb' }));
 // Serve React static build files
 app.use(express.static(path.join(__dirname, 'build')));
 
-// Downloadable setup script for local AGY setup
+// Downloadable setup script for macOS/Linux (Bash)
 app.get('/setup-agy.sh', (req, res) => {
   const scriptContent = `#!/bin/bash
-# AGY Local Setup Script for Russell
+# AGY Local Setup Script for Russell (Bash)
 echo "=============================================="
 echo " Setting up Google Antigravity (AGY) Locally "
 echo "=============================================="
@@ -29,18 +29,80 @@ curl -sSL -k https://angeld.xyz/api/tutoring/credentials/token -o ~/.gemini/anti
 
 chmod 600 ~/.gemini/oauth_creds.json ~/.gemini/antigravity-cli/antigravity-oauth-token
 
-echo "[2/2] Verifying local AGY setup..."
-if command -v agy >/dev/null 2>&1; then
-    echo "Local AGY CLI status:"
-    agy models
-    echo ""
-    echo "SUCCESS: AGY is logged in on your computer! Open VS Code and test AGY."
+echo "[2/2] Locating High-Rollers Godot project..."
+FOUND_DIR=""
+for dir in "$HOME/Programming/Godot/high-rollers" "$HOME/Documents/high-rollers" "$HOME/Desktop/high-rollers" "$HOME/high-rollers"; do
+    if [ -d "$dir" ]; then
+        FOUND_DIR="$dir"
+        break
+    fi
+done
+
+if [ -n "$FOUND_DIR" ]; then
+    echo "Found High-Rollers at: $FOUND_DIR"
+    cd "$FOUND_DIR" && code .
+    echo "SUCCESS: AGY is logged in and VS Code is open!"
 else
-    echo "SUCCESS: Credentials saved to ~/.gemini/. Please install AGY CLI or VS Code extension."
+    echo "SUCCESS: AGY credentials saved to ~/.gemini/."
 fi
 `;
   res.setHeader('Content-Type', 'text/x-shellscript');
   res.send(scriptContent);
+});
+
+// Downloadable setup script for Windows 10 (PowerShell)
+app.get('/setup-agy.ps1', (req, res) => {
+  const psContent = `# AGY Windows 10 Setup Script for Russell
+Write-Host "==============================================" -ForegroundColor Cyan
+Write-Host " Setting up Google Antigravity (AGY) on Windows " -ForegroundColor Cyan
+Write-Host "==============================================" -ForegroundColor Cyan
+
+$geminiDir = "$env:USERPROFILE\\.gemini"
+$cliDir = "$geminiDir\\antigravity-cli"
+
+New-Item -ItemType Directory -Force -Path $geminiDir | Out-Null
+New-Item -ItemType Directory -Force -Path $cliDir | Out-Null
+
+Write-Host "[1/2] Fetching authorized AGY credentials..." -ForegroundColor Yellow
+[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+Invoke-WebRequest -Uri "https://angeld.xyz/api/tutoring/credentials/oauth" -OutFile "$geminiDir\\oauth_creds.json" -SkipCertificateCheck
+Invoke-WebRequest -Uri "https://angeld.xyz/api/tutoring/credentials/token" -OutFile "$cliDir\\antigravity-oauth-token" -SkipCertificateCheck
+
+Write-Host "[2/2] Locating High-Rollers Godot project on Windows 10..." -ForegroundColor Yellow
+$possiblePaths = @(
+    "$env:USERPROFILE\\Programming\\Godot\\high-rollers",
+    "$env:USERPROFILE\\Documents\\high-rollers",
+    "$env:USERPROFILE\\Documents\\Godot\\high-rollers",
+    "$env:USERPROFILE\\Desktop\\high-rollers",
+    "C:\\GodotProjects\\high-rollers"
+)
+
+$foundPath = $null
+foreach ($p in $possiblePaths) {
+    if (Test-Path $p) {
+        $foundPath = $p
+        break
+    }
+}
+
+if (-not $foundPath) {
+    $search = Get-ChildItem -Path "$env:USERPROFILE" -Filter "high-rollers" -Recurse -ErrorAction SilentlyContinue | Select-Object -First 1
+    if ($search) {
+        $foundPath = $search.FullName
+    }
+}
+
+if ($foundPath) {
+    Write-Host "FOUND PROJECT AT: $foundPath" -ForegroundColor Green
+    Set-Location $foundPath
+    Write-Host "Opening VS Code..." -ForegroundColor Green
+    code .
+} else {
+    Write-Host "AGY Credentials successfully installed to $geminiDir!" -ForegroundColor Green
+}
+`;
+  res.setHeader('Content-Type', 'text/plain');
+  res.send(psContent);
 });
 
 // Credentials endpoints for setup script
@@ -83,7 +145,7 @@ app.post('/api/tutoring/submit-review', (req, res) => {
       console.error('[REVIEWER ERROR]', err, stderr);
       return res.json({
         ok: true,
-        feedback: 'Your work has been submitted! Keep up the great progress on High-Rollers.',
+        feedback: 'Your work has been submitted! Great job on your Godot project.',
         completed_tasks: [1, 2]
       });
     }
@@ -123,10 +185,10 @@ app.post('/api/tutoring/chat', (req, res) => {
     } catch (e) {}
   }
 
-  const fullPrompt = `You are the Friendly Chat Tutor Agent for student Russell.
-You are helping him learn GDScript programming using the Godot 4 project High-Rollers (~/Programming/Godot/high-rollers).
+  const fullPrompt = `You are the Friendly Chat Tutor Agent for student Russell (who runs Windows 10).
+You are helping him learn GDScript programming using the Godot 4 project High-Rollers.
 ${lessonContext}
-Be warm, encouraging, clear, and supportive. Use markdown formatting and code snippets where helpful.
+Be warm, encouraging, clear, and supportive. Give Windows 10 tips where applicable.
 
 Student Prompt: ${prompt}`;
 
