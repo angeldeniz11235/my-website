@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link, Navigate } from 'react-router-dom';
 import Login from './Components/Login';
-import ProtectedRoute from './Components/ProtectedRoute';
 import { fetchHomePageURL, getImageUrls } from './services/api';
 import MoviePlayer from './Components/MoviePlayer';
 import TutoringLogin from './Components/TutoringLogin';
 import TutoringTerminal from './Components/TutoringTerminal';
+import TutorDashboard from './Components/TutorDashboard';
 
 function MainLayout({ children, backgroundImgURL, homepageURL }) {
   return (
@@ -24,7 +24,7 @@ function MainLayout({ children, backgroundImgURL, homepageURL }) {
           <li><a href="#about" className="text-white">About</a></li>
           <li><a href="#services" className="text-white">Services</a></li>
           <li><a href="#contact" className="text-white">Contact</a></li>
-          <li><Link to="/admin" className="text-white">Admin</Link></li>
+          <li><Link to="/admin" className="text-white font-bold text-emerald-400">Tutor Dashboard</Link></li>
         </ul>
       </nav>
       <div className="flex-grow flex items-center justify-center bg-black bg-opacity-50">
@@ -53,8 +53,6 @@ function App() {
     (async () => {
       const bgImgURLs = await getImageUrls('global-value', 'background');
       console.log(bgImgURLs);
-      // Set the background image URL state to the 'large' format
-      console.log(bgImgURLs?.large);
       setBackgroundImgURL(bgImgURLs?.large);
     })();
   }, []);
@@ -62,10 +60,12 @@ function App() {
   return (
     <Router>
       <Routes>
-        {/* Dedicated Tutoring Terminal Routes */}
+        {/* Dedicated Tutoring Workspace & Dashboard Routes */}
         <Route path="/tutoring/login" element={<TutoringLogin />} />
         <Route path="/tutoring/chat" element={<TutoringTerminal />} />
+        <Route path="/tutoring/dashboard" element={<TutorDashboard />} />
         <Route path="/tutoring" element={<Navigate to="/tutoring/login" replace />} />
+        <Route path="/admin" element={<TutorDashboard />} />
 
         {/* Default Website Routes */}
         <Route
@@ -74,14 +74,6 @@ function App() {
             <MainLayout backgroundImgURL={backgroundImgURL} homepageURL={homepageURL}>
               <Routes>
                 <Route path="/login" element={<Login setAuth={setAuth} />} />
-                <Route
-                  path="/admin"
-                  element={
-                    <ProtectedRoute auth={auth}>
-                      <h1 className="text-4xl font-bold text-white">Admin Page</h1>
-                    </ProtectedRoute>
-                  }
-                />
                 <Route path="/warfare-2025" element={<MoviePlayer />} />
                 <Route path="/" element={<h1 className="text-4xl font-bold text-white">Welcome to My Website</h1>} />
               </Routes>
