@@ -28,10 +28,13 @@ def generate_next_lesson():
     
     prompt = (
         f"You are the Lesson Planner Agent for a Godot 4 GDScript programming course.\n"
-        f"Project: ~/Programming/Godot/high-rollers (Card game).\n"
+        f"Project: High-Rollers (Card game).\n"
+        f"Student OS: Windows 10.\n"
         f"Current week: {curr_week}.\n"
         f"Generate Week {next_week}'s lesson plan JSON for student Russell.\n"
-        f"CRITICAL CONSTRAINT: Total workload MUST be strictly under 90 minutes.\n\n"
+        f"CRITICAL CONSTRAINTS:\n"
+        f"1. Total workload MUST be strictly under 90 minutes.\n"
+        f"2. DO NOT hardcode folder installation paths (e.g. ~/Programming/Godot/...). Assume the student opens the project in VS Code.\n\n"
         f"Return ONLY a raw JSON object with the following structure:\n"
         f"{{\n"
         f'  "week": {next_week},\n'
@@ -42,7 +45,7 @@ def generate_next_lesson():
         f'    {{\n'
         f'      "id": 1,\n'
         f'      "title": "Task 1 Name",\n'
-        f'      "description": "Clear step by step instructions",\n'
+        f'      "description": "Clear step by step instructions (location agnostic)",\n'
         f'      "code_example": "var card_value = 10",\n'
         f'      "completed": false\n'
         f'    }}\n'
