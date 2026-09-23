@@ -1,41 +1,75 @@
 #!/usr/bin/env python3
 """
-Lesson Planner Agent - Generates weekly <=90min GDScript/Godot lessons for High-Rollers.
-Runs automatically on a schedule (Sundays at 8:00 PM).
+Lesson Planner Agent - Audits project_state.json and runs Godot 4 headless runner before generating lessons.
 """
 import json
 import os
 import subprocess
 import sys
+from godot_runner import run_godot_verification
 
 TUTORING_DIR = "/root/tutoring"
 CURRENT_LESSON_FILE = os.path.join(TUTORING_DIR, "current_lesson.json")
 LESSONS_DIR = os.path.join(TUTORING_DIR, "lessons")
+PROJECT_STATE_FILE = os.path.join(TUTORING_DIR, "project_state.json")
 
-def get_current_week():
+import argparse
+
+def get_next_week_from_db():
+    try:
+        cmd = ["mysql", "--defaults-file=/etc/mysql/debian.cnf", "-D", "student_tracker", "-e", "SELECT COALESCE(MAX(week_number), 0) + 1 FROM lessons;", "-sN"]
+        res = subprocess.run(cmd, capture_output=True, text=True)
+        if res.returncode == 0 and res.stdout.strip().isdigit():
+            return int(res.stdout.strip())
+    except Exception:
+        pass
+    
     if os.path.exists(CURRENT_LESSON_FILE):
         try:
             with open(CURRENT_LESSON_FILE, "r") as f:
                 data = json.load(f)
-                return data.get("week", 1)
+                return data.get("week", 1) + 1
         except Exception:
             pass
     return 1
 
 def generate_next_lesson():
-    curr_week = get_current_week()
-    next_week = curr_week + 1
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--next-week", type=int, help="Target week number to generate")
+    args, _ = parser.parse_known_args()
+
+    if args.next_week is not None and args.next_week > 0:
+        next_week = args.next_week
+    else:
+        next_week = get_next_week_from_db()
     
+    curr_week = max(1, next_week - 1)
+    
+    # Run Godot headless verification
+    godot_status = run_godot_verification()
+    
+    # Load feature matrix
+    project_state = {}
+    if os.path.exists(PROJECT_STATE_FILE):
+        try:
+            with open(PROJECT_STATE_FILE, "r") as f:
+                project_state = json.load(f)
+        except Exception:
+            pass
+            
     prompt = (
         f"You are the Lesson Planner Agent for a Godot 4 GDScript programming course.\n"
-        f"Project: High-Rollers (Card game).\n"
+        f"Project: High-Rollers (Turn-based Card Game).\n"
         f"Student OS: Windows 10.\n"
-        f"Current week: {curr_week}.\n"
-        f"Generate Week {next_week}'s lesson plan JSON for student Russell.\n"
+        f"Current week: {curr_week}. Generating Week {next_week}.\n"
+        f"Project Feature State: {json.dumps(project_state)}.\n"
+        f"Godot Headless Runtime Audit: {json.dumps(godot_status)}.\n\n"
         f"CRITICAL CONSTRAINTS:\n"
         f"1. Total workload MUST be strictly under 90 minutes.\n"
-        f"2. DO NOT hardcode folder installation paths (e.g. ~/Programming/Godot/...). Assume the student opens the project in VS Code.\n\n"
-        f"Return ONLY a raw JSON object with the following structure:\n"
+        f"2. DO NOT re-implement existing features (e.g. card drag/drop, energy, starter decks, AI profiles).\n"
+        f"3. Select next logical step from the roadmap (e.g. Turn transition UI, VFX animations, audio manager, or win/loss screens).\n"
+        f"4. DO NOT hardcode folder installation paths.\n\n"
+        f"Return ONLY a raw JSON object:\n"
         f"{{\n"
         f'  "week": {next_week},\n'
         f'  "title": "Lesson Title Here",\n'
@@ -45,7 +79,7 @@ def generate_next_lesson():
         f'    {{\n'
         f'      "id": 1,\n'
         f'      "title": "Task 1 Name",\n'
-        f'      "description": "Clear step by step instructions (location agnostic)",\n'
+        f'      "description": "Clear step by step instructions",\n'
         f'      "code_example": "var card_value = 10",\n'
         f'      "completed": false\n'
         f'    }}\n'

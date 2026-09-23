@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import ReactMarkdown from 'react-markdown';
 
 function TutoringTerminal() {
   const [user, setUser] = useState('russell');
@@ -152,31 +153,32 @@ function TutoringTerminal() {
   };
 
   return (
-    <div className="min-h-screen w-full bg-slate-950 font-sans text-slate-100 flex flex-col">
+    <div className="min-h-screen w-full bg-slate-950 font-sans text-slate-100 flex flex-col bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-slate-900 via-slate-950 to-slate-950">
       {/* Top Header Bar */}
-      <header className="bg-slate-900 border-b border-slate-800 px-6 py-3 flex items-center justify-between shadow-md">
-        <div className="flex items-center space-x-3">
-          <div className="w-9 h-9 rounded-full bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center font-bold text-emerald-400">
+      <header className="bg-slate-900/90 backdrop-blur-md border-b border-slate-800/80 px-6 py-3.5 flex items-center justify-between shadow-lg sticky top-0 z-20">
+        <div className="flex items-center space-x-3.5">
+          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-500/30 to-cyan-500/20 border border-emerald-500/40 flex items-center justify-center font-bold text-emerald-400 text-base shadow-sm">
             🤖
           </div>
           <div>
-            <h1 className="text-sm font-bold text-white tracking-wide">
-              AGY Tutoring Workspace
+            <h1 className="text-sm font-bold text-white tracking-wide flex items-center space-x-2">
+              <span>AGY Tutoring Workspace</span>
+              <span className="bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 text-[10px] font-semibold px-2 py-0.5 rounded-full">Student Portal</span>
             </h1>
-            <p className="text-xs text-slate-400">
-              Student: <span className="text-emerald-400 font-semibold">{user} (Windows 10)</span> | Project: High-Rollers (Godot)
+            <p className="text-[11px] text-slate-400">
+              Student: <span className="text-emerald-400 font-semibold">{user} (Windows 10)</span> | Project: <span className="text-slate-200 font-medium">High-Rollers (Godot)</span>
             </p>
           </div>
         </div>
 
-        <div className="flex items-center space-x-4">
-          <div className="hidden sm:flex items-center space-x-2 text-xs bg-slate-800 border border-slate-700 rounded-full px-3 py-1 text-emerald-400">
+        <div className="flex items-center space-x-3.5">
+          <div className="hidden sm:flex items-center space-x-2 text-xs bg-slate-800/80 border border-slate-700/80 rounded-full px-3.5 py-1 text-emerald-400 shadow-inner">
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-            <span>AGY Tutor Active</span>
+            <span className="font-medium">AGY Tutor Active</span>
           </div>
           <button
             onClick={handleLogout}
-            className="text-xs text-slate-400 hover:text-red-400 border border-slate-700 hover:border-red-500/40 px-3 py-1.5 rounded-lg transition-all cursor-pointer font-medium"
+            className="text-xs text-slate-300 hover:text-red-400 bg-slate-800 hover:bg-slate-700 border border-slate-700 px-3.5 py-1.5 rounded-xl transition-all cursor-pointer font-medium shadow-sm"
           >
             Logout
           </button>
@@ -186,9 +188,9 @@ function TutoringTerminal() {
       {/* Main 2-Column Layout */}
       <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-4 p-4 max-w-7xl w-full mx-auto overflow-hidden">
         {/* Left Column: Friendly Chat Tutor Screen (7 cols) */}
-        <div className="lg:col-span-7 bg-slate-900 border border-slate-800 rounded-xl shadow-xl flex flex-col overflow-hidden h-[calc(100vh-6rem)]">
+        <div className="lg:col-span-7 bg-slate-900/90 backdrop-blur-md border border-slate-800 rounded-2xl shadow-2xl flex flex-col overflow-hidden h-[calc(100vh-5.5rem)]">
           {/* Chat Column Header */}
-          <div className="bg-slate-800/80 border-b border-slate-700 px-4 py-3 flex items-center space-x-3">
+          <div className="bg-slate-800/80 backdrop-blur border-b border-slate-700/70 px-5 py-3.5 flex items-center space-x-3">
             <span className="text-lg">💬</span>
             <div>
               <h2 className="text-xs font-bold uppercase tracking-wider text-slate-200">
@@ -214,13 +216,53 @@ function TutoringTerminal() {
                   <span className="text-[10px] text-slate-500">{msg.time}</span>
                 </div>
                 <div
-                  className={`max-w-[85%] rounded-2xl px-4 py-3 text-sm leading-relaxed whitespace-pre-wrap shadow-sm ${
+                  className={`max-w-[85%] rounded-2xl px-4 py-3 text-sm leading-relaxed shadow-sm ${
                     msg.sender === 'user'
-                      ? 'bg-emerald-600 text-white rounded-br-none font-medium'
-                      : 'bg-slate-800 border border-slate-700 text-slate-100 rounded-bl-none font-mono text-xs sm:text-sm'
+                      ? 'bg-emerald-600 text-white rounded-2xl rounded-tr-xs px-4 py-3 text-xs sm:text-sm font-medium shadow-md shadow-emerald-950/30 whitespace-pre-wrap'
+                      : 'bg-slate-800/90 border border-slate-700/80 text-slate-100 rounded-2xl rounded-tl-xs px-4.5 py-3.5 text-xs sm:text-sm shadow-sm'
                   }`}
                 >
-                  {msg.text}
+                  {msg.sender === 'user' ? (
+                    msg.text
+                  ) : (
+                    <ReactMarkdown
+                      components={{
+                        p: ({ children }) => <p className="mb-2.5 last:mb-0 leading-relaxed text-slate-200">{children}</p>,
+                        strong: ({ children }) => <strong className="font-bold text-emerald-300">{children}</strong>,
+                        em: ({ children }) => <em className="italic text-slate-300">{children}</em>,
+                        pre: ({ children }) => (
+                          <pre className="bg-slate-950 border border-slate-700 text-emerald-300 font-mono text-xs p-3 rounded-lg overflow-x-auto my-2.5 leading-relaxed whitespace-pre">
+                            {children}
+                          </pre>
+                        ),
+                        code: ({ node, inline, className, children, ...props }) => {
+                          const match = /language-(\w+)/.exec(className || '');
+                          const isInline = inline || (!match && (!className || !className.includes('language-')));
+                          if (isInline) {
+                            return (
+                              <code className="bg-slate-900 border border-slate-700 text-emerald-400 font-mono text-[11px] sm:text-xs px-1.5 py-0.5 rounded inline font-normal" {...props}>
+                                {children}
+                              </code>
+                            );
+                          }
+                          return (
+                            <code className="font-mono text-xs text-emerald-300" {...props}>
+                              {children}
+                            </code>
+                          );
+                        },
+                        ul: ({ children }) => <ul className="list-disc list-outside pl-5 space-y-1 my-2 text-slate-200">{children}</ul>,
+                        ol: ({ children }) => <ol className="list-decimal list-outside pl-5 space-y-1 my-2 text-slate-200">{children}</ol>,
+                        li: ({ children }) => <li className="text-slate-200 leading-relaxed">{children}</li>,
+                        h1: ({ children }) => <h1 className="text-base font-bold text-emerald-400 mt-4 mb-2 border-b border-slate-700 pb-1">{children}</h1>,
+                        h2: ({ children }) => <h2 className="text-sm font-bold text-emerald-400 mt-3 mb-1.5">{children}</h2>,
+                        h3: ({ children }) => <h3 className="text-xs font-bold text-emerald-400 mt-2.5 mb-1">{children}</h3>,
+                        hr: () => <hr className="border-slate-700 my-3" />
+                      }}
+                    >
+                      {msg.text}
+                    </ReactMarkdown>
+                  )}
                 </div>
               </div>
             ))}
@@ -243,12 +285,12 @@ function TutoringTerminal() {
               onChange={(e) => setInputCommand(e.target.value)}
               disabled={isLoading}
               placeholder="Ask a question or request a Godot hint..."
-              className="flex-1 bg-slate-950 border border-slate-700 focus:border-emerald-500 rounded-xl px-4 py-2.5 text-sm text-slate-100 focus:outline-none placeholder-slate-500 transition-all font-sans"
+              className="flex-1 bg-slate-950 border border-slate-700/80 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 text-slate-100 rounded-xl px-4 py-2.5 text-sm placeholder-slate-500 flex-1 outline-none transition-all font-sans"
             />
             <button
               type="submit"
               disabled={isLoading || !inputCommand.trim()}
-              className="bg-emerald-600 hover:bg-emerald-500 disabled:opacity-40 text-white px-5 py-2.5 rounded-xl text-sm font-semibold transition-all shadow-md cursor-pointer"
+              className="bg-emerald-600 hover:bg-emerald-500 disabled:opacity-40 text-white font-semibold px-5 py-2.5 rounded-xl text-sm transition-all shadow-md active:scale-95 cursor-pointer"
             >
               Send
             </button>
@@ -256,9 +298,9 @@ function TutoringTerminal() {
         </div>
 
         {/* Right Column: Weekly Lesson Plan Panel (5 cols) */}
-        <div className="lg:col-span-5 bg-slate-900 border border-slate-800 rounded-xl shadow-xl flex flex-col overflow-hidden h-[calc(100vh-6rem)]">
+        <div className="lg:col-span-5 bg-slate-900/90 backdrop-blur-md border border-slate-800 rounded-2xl shadow-2xl flex flex-col overflow-hidden h-[calc(100vh-5.5rem)]">
           {/* Lesson Header */}
-          <div className="bg-slate-800/80 border-b border-slate-700 px-4 py-3 flex items-center justify-between">
+          <div className="bg-slate-800/80 backdrop-blur border-b border-slate-700/70 px-5 py-3.5 flex items-center justify-between">
             <div className="flex items-center space-x-2">
               <span className="text-lg">📋</span>
               <div>
@@ -315,7 +357,7 @@ function TutoringTerminal() {
                 Tasks ({completedTasks.size} of {lesson?.tasks?.length || 0} Done)
               </h3>
 
-              {lesson?.tasks?.map((task) => {
+              {lesson?.tasks?.map((task, idx) => {
                 const isDone = completedTasks.has(task.id);
                 return (
                   <div
@@ -339,7 +381,7 @@ function TutoringTerminal() {
                             isDone ? 'line-through text-slate-400' : 'text-slate-100'
                           }`}
                         >
-                          Task {task.id}: {task.title}
+                          Task {task.task_order || idx + 1}: {task.title}
                         </span>
                         <p className="text-[11px] text-slate-400 mt-1 leading-normal">
                           {task.description}
@@ -377,7 +419,7 @@ function TutoringTerminal() {
             <button
               onClick={handleSubmitWork}
               disabled={isSubmitting}
-              className="w-full bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 text-white font-bold py-2.5 rounded-lg text-xs tracking-wider transition-all shadow-md cursor-pointer uppercase"
+              className="w-full bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 text-white font-bold py-3 rounded-xl text-xs tracking-wider transition-all shadow-lg uppercase active:scale-[0.98] cursor-pointer"
             >
               {isSubmitting ? 'Checking Work...' : 'Submit Work for Review →'}
             </button>

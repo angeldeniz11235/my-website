@@ -1,0 +1,20 @@
+{
+  "project_name": "high-rollers",
+  "engine": "Godot 4 (GDScript)",
+  "implemented_features": [
+    "PanelContainer Card base with mouse hover tween scaling (card_base.gd)",
+    "Drag and drop card physics with lane collision check (_gui_input & check_drop)",
+    "Energy management and max capacity scaling (GameManager.gd)",
+    "Deck management: draw pile, discard pile, reshuffling (DeckManager.gd)",
+    "Lane placement & board attack calculations (Lane.gd, main.tscn)",
+    "Multi-tier AI Profiles: Easy (random), Medium (heuristic), Hard (simulated combat scoring) (OpponentManager.gd)",
+    "Card archetypes (Dealer, Slot Guard, Card Shark, Pit Boss, Bouncer, Jackpot King, High Roller)"
+  ],
+  "roadmap_to_professional_game": [
+    "Phase 1: Turn transition banners & UI polish (Player Turn / Opponent Turn overlays, victory/defeat popups)",
+    "Phase 2: Particle VFX & card play animations (VFX spawners, damage popups, card attack animations)",
+    "Phase 3: Audio system (Sound manager for card drag, drop, attack sounds, background music)",
+    "Phase 4: Deck customization UI & Main Menu screen",
+    "Phase 5: Game balance & settings persistence"
+  ]
+}
