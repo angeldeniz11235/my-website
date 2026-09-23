@@ -76,3 +76,13 @@ ssh root@107.152.35.192 "python3 /root/tutoring/agents/planner_agent.py --next-w
 - **Lesson Deletion Protection**: Lessons with status `approved` or `active`, or with recorded student work submissions, cannot be deleted without passing `{ override: true }` in the API payload.
 - **Task Indexing**: Student UI displays 1-based sequential task order indices (`Task 1`, `Task 2`) derived from `task_order` rather than database auto-increment IDs.
 - **Active Lesson Sync**: Whenever a lesson status is updated to `active`, the backend demotes other active lessons to `approved` and updates `/root/tutoring/current_lesson.json`.
+
+---
+
+## 5. Admin Password Authentication & Security
+
+- **Route**:  (Tutor Admin Dashboard)
+- **Default Password**: 
+- **Database Storage**: Password is hashed using salted  (64-byte key length) stored in  under  and .
+- **Password Updates**: Navigating to the **Email & Settings** tab in the Admin Dashboard allows changing the admin password by providing the current password and the new password.
+- **Session Control**: Uses  and includes a **Logout** button on the dashboard header bar.
